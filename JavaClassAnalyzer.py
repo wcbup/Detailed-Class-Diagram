@@ -14,7 +14,16 @@ class JavaClassAnalyzer:
         self.content_json: Dict[str, Union[str, List[str], Dict]] = json.loads(
             content_str
         )
-        self.id = self.content_json["name"].replace("/", ".")
+
+        def get_id(name: str) -> str:
+            """
+            change name into id
+            """
+            return name.replace("/", ".")
+
+        self.id = get_id(self.content_json["name"])
+        self.super_class_id = get_id(self.content_json["super"]["name"])
+
 
 
 class ClassPainter:
@@ -32,7 +41,8 @@ class ClassPainter:
         save the code into './result.dot'
         """
         dot_id_map: Dict[str, str] = {}  # java class id maps to dot id
-        self.dot_code ="""
+        id_class_map: Dict[str, JavaClassAnalyzer] = {}  # java id to java class
+        self.dot_code = """
         digraph Class_Diagram {
         graph [
 		label="Detailed Class Diagram"
@@ -61,35 +71,64 @@ class ClassPainter:
         # allocate the dot id to java class analyzer
         for java_class in self.java_class_set:
             allocate_id(java_class.id)
+            allocate_id(java_class.super_class_id)
+            id_class_map[java_class.id] = java_class
 
         for java_class_id in dot_id_map:
             dot_id = dot_id_map[java_class_id]
-            self.dot_code += (
-                # f'x{dot_id_map[java_class_id]} [label = "{java_class_id}"];\n'
-                f"""
-                x{dot_id} [
-                    shape=plain
-                    label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
-                        <tr> <td> <b>{java_class_id}</b> </td> </tr>
-                        <tr> <td>
+            field_code = ""  # dot code for the field
+            method_code = ""  # dot code for method
+            if java_class_id in id_class_map:
+                java_class = id_class_map[java_class_id]
+                field_code = f"""
                             <table border="0" cellborder="0" cellspacing="0" >
                                 <tr> <td align="left" >+ field</td> </tr>
                                 <tr> <td port="ss1" align="left" >- Subsystem 1</td> </tr>
                                 <tr> <td port="ss2" align="left" >- Subsystem 2</td> </tr>
                                 <tr> <td port="ss3" align="left" >- Subsystem 3</td> </tr>
                             </table>
-                        </td> </tr>
-                        <tr> <td>
+"""
+                method_code = f"""
                             <table border="0" cellborder="0" cellspacing="0" >
                                 <tr> <td align="left" >+ method</td> </tr>
                                 <tr> <td align="left" >- method 1</td> </tr>
                             </table>
+"""
+            else:
+                field_code = f"""
+                            <table border="0" cellborder="0" cellspacing="0" >
+                                <tr> <td align="left" >+ field</td> </tr>
+                                <tr> <td align="left" > ... </td> </tr>
+                            </table>
+"""
+                method_code = f"""
+                            <table border="0" cellborder="0" cellspacing="0" >
+                                <tr> <td align="left" >+ method</td> </tr>
+                                <tr> <td align="left" > ... </td> </tr>
+                            </table>
+"""
+
+
+            self.dot_code += f"""
+                x{dot_id} [
+                    shape=plain
+                    label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                        <tr> <td> <b>{java_class_id}</b> </td> </tr>
+                        <tr> <td>
+                        {field_code}
+                        </td> </tr>
+                        <tr> <td>
+                        {method_code}
                         </td> </tr>
                     </table>>
                 ]
 
 """
-            )
+        for java_class in self.java_class_set:
+            self.dot_code += f"""
+                    edge [arrowhead=empty style=""]
+                    x{dot_id_map[java_class.id]} -> x{dot_id_map[java_class.super_class_id]} [xlabel=inheritance]
+"""
 
         self.dot_code += "}"
 
