@@ -5,6 +5,25 @@ import json
 import os
 
 
+class JavaInterface:
+    """
+    class representing the java interface
+    """
+
+    def __init__(self, id: str) -> None:
+        self.id = id
+        self.arg_ids: List[str] = []
+
+    def add_one_arg_id(self, id: str) -> None:
+        self.arg_ids.append(id)
+
+    def get_detailed_id(self) -> str:
+        if len(self.arg_ids) == 0:
+            return self.id
+        else:
+            return f"{self.id}&lt;{', '.join(self.arg_ids)}&gt;"
+
+
 class JavaClassAnalyzer:
     """
     class for analyzing one java class file
@@ -22,8 +41,24 @@ class JavaClassAnalyzer:
             return name.replace("/", ".")
 
         self.id = get_id(self.content_json["name"])
+
+        # get super class
         self.super_class_id = get_id(self.content_json["super"]["name"])
 
+        # realization
+
+        self.interface_set: Set[JavaInterface] = set()
+        interfaces_content: List[Dict[str]] = self.content_json["interfaces"]
+        for interface_content in interfaces_content:
+            interface_id = get_id(interface_content["name"])
+            java_interface = JavaInterface(interface_id)
+
+            args_content: List[Dict[str]] = interface_content["args"]
+            for arg_content in args_content:
+                arg_id = get_id(arg_content["type"]["name"])
+                java_interface.add_one_arg_id(arg_id)
+
+            self.interface_set.add(java_interface)
 
 
 class ClassPainter:
@@ -41,7 +76,6 @@ class ClassPainter:
         save the code into './result.dot'
         """
         dot_id_map: Dict[str, str] = {}  # java class id maps to dot id
-        id_class_map: Dict[str, JavaClassAnalyzer] = {}  # java id to java class
         self.dot_code = """
         digraph Class_Diagram {
         graph [
@@ -58,77 +92,96 @@ class ClassPainter:
     """
         self.dot_id = 0  # the id for java class in dot class
 
-        def allocate_id(java_class_id: str) -> None:
+        def allocate_id(java_class: str | JavaClassAnalyzer | JavaInterface) -> None:
             """
             allocate the id to java class if it doesn't have one
             """
-            if java_class_id in dot_id_map:
-                return
-            else:
-                dot_id_map[java_class_id] = str(self.dot_id)
-                self.dot_id += 1
+            if isinstance(java_class, str) or isinstance(java_class, JavaInterface):
+                if isinstance(java_class, str):
+                    java_class_id = java_class
+                elif isinstance(java_class, JavaInterface):
+                    java_class_id = java_class.get_detailed_id()
+                if java_class_id in dot_id_map:
+                    return
+                else:
+                    dot_id_map[java_class_id] = str(self.dot_id)
+                    dot_id = self.dot_id
+                    self.dot_id += 1
+                    self.dot_code += f"""
+                        x{dot_id} [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>{java_class_id}</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+"""
+            elif isinstance(java_class, JavaClassAnalyzer):
+                java_class_id = java_class.id
+
+                if java_class_id in dot_id_map:
+                    return
+                else:
+                    dot_id_map[java_class_id] = str(self.dot_id)
+                    dot_id = self.dot_id
+                    self.dot_id += 1
+                    self.dot_code += f"""
+                        x{dot_id} [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>{java_class_id}</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td port="ss1" align="left" >- Subsystem 1</td> </tr>
+                                        <tr> <td port="ss2" align="left" >- Subsystem 2</td> </tr>
+                                        <tr> <td port="ss3" align="left" >- Subsystem 3</td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" >- method 1</td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+"""
 
         # allocate the dot id to java class analyzer
         for java_class in self.java_class_set:
-            allocate_id(java_class.id)
+            allocate_id(java_class)
             allocate_id(java_class.super_class_id)
-            id_class_map[java_class.id] = java_class
+            for java_interface in java_class.interface_set:
+                allocate_id(java_interface)
+                for arg_id in java_interface.arg_ids:
+                    allocate_id(arg_id)
 
-        for java_class_id in dot_id_map:
-            dot_id = dot_id_map[java_class_id]
-            field_code = ""  # dot code for the field
-            method_code = ""  # dot code for method
-            if java_class_id in id_class_map:
-                java_class = id_class_map[java_class_id]
-                field_code = f"""
-                            <table border="0" cellborder="0" cellspacing="0" >
-                                <tr> <td align="left" >+ field</td> </tr>
-                                <tr> <td port="ss1" align="left" >- Subsystem 1</td> </tr>
-                                <tr> <td port="ss2" align="left" >- Subsystem 2</td> </tr>
-                                <tr> <td port="ss3" align="left" >- Subsystem 3</td> </tr>
-                            </table>
-"""
-                method_code = f"""
-                            <table border="0" cellborder="0" cellspacing="0" >
-                                <tr> <td align="left" >+ method</td> </tr>
-                                <tr> <td align="left" >- method 1</td> </tr>
-                            </table>
-"""
-            else:
-                field_code = f"""
-                            <table border="0" cellborder="0" cellspacing="0" >
-                                <tr> <td align="left" >+ field</td> </tr>
-                                <tr> <td align="left" > ... </td> </tr>
-                            </table>
-"""
-                method_code = f"""
-                            <table border="0" cellborder="0" cellspacing="0" >
-                                <tr> <td align="left" >+ method</td> </tr>
-                                <tr> <td align="left" > ... </td> </tr>
-                            </table>
-"""
-
-
-            self.dot_code += f"""
-                x{dot_id} [
-                    shape=plain
-                    label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
-                        <tr> <td> <b>{java_class_id}</b> </td> </tr>
-                        <tr> <td>
-                        {field_code}
-                        </td> </tr>
-                        <tr> <td>
-                        {method_code}
-                        </td> </tr>
-                    </table>>
-                ]
-
-"""
         for java_class in self.java_class_set:
+            dot_id = dot_id_map[java_class.id]
+            # inheritance
             self.dot_code += f"""
                     edge [arrowhead=empty style=""]
-                    x{dot_id_map[java_class.id]} -> x{dot_id_map[java_class.super_class_id]} [xlabel=inheritance]
+                    x{dot_id} -> x{dot_id_map[java_class.super_class_id]}
 """
+            for interface in java_class.interface_set:
+                self.dot_code += f"""
+                        edge [arrowhead=empty style=dashed]
+                        x{dot_id} -> x{dot_id_map[interface.get_detailed_id()]}
+    """
 
         self.dot_code += "}"
 
