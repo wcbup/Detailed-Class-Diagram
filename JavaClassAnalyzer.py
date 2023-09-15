@@ -62,7 +62,7 @@ class JavaClassAnalyzer:
         fields_content: List[Dict[str]] = self.content_json["fields"]
         for field_content in fields_content:
             name = field_content["name"]
-            if name == "this":
+            if name == "this$0":
                 continue
 
             type_content: Dict[str] = field_content["type"]
