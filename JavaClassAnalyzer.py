@@ -8,8 +8,6 @@ import os
 class JavaClass:
     def __init__(self, type_id: str, name: str | None, is_base_type: bool) -> None:
         self.type_id = type_id
-        if name == "this$0":
-            name = "this"
         self.name = name
         self.is_base_type = is_base_type
         self.arg_ids: List[str] = []
@@ -64,6 +62,8 @@ class JavaClassAnalyzer:
         fields_content: List[Dict[str]] = self.content_json["fields"]
         for field_content in fields_content:
             name = field_content["name"]
+            if name == "this":
+                continue
 
             type_content: Dict[str] = field_content["type"]
             if "name" in type_content.keys():
