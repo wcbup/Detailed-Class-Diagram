@@ -8,6 +8,8 @@ import os
 class JavaClass:
     def __init__(self, type_id: str, name: str | None, is_base_type: bool) -> None:
         self.type_id = type_id
+        if name == "this$0":
+            name = "this"
         self.name = name
         self.is_base_type = is_base_type
         self.arg_ids: List[str] = []
@@ -66,6 +68,8 @@ class JavaClassAnalyzer:
             type_content: Dict[str] = field_content["type"]
             if "name" in type_content.keys():
                 type_id = get_id(field_content["type"]["name"])
+                if type_id == self.id:
+                    continue
                 args_content: List[Dict[str]] = field_content["type"]["args"]
                 java_class = JavaClass(type_id, name, False)
                 for arg_content in args_content:
@@ -185,10 +189,16 @@ class ClassPainter:
             allocate_class_id(java_class)
         for java_class in self.java_class_set:
             allocate_class_id(java_class.super_class_id)
+
             for java_interface in java_class.interface_set:
                 allocate_class_id(java_interface)
                 for arg_id in java_interface.arg_ids:
                     allocate_class_id(arg_id)
+
+            for field in java_class.field_set:
+                if field.is_base_type:
+                    continue
+                allocate_class_id(field.type_id)
 
         for java_class in self.java_class_set:
             dot_id = dot_id_map[java_class.id]
@@ -199,9 +209,19 @@ class ClassPainter:
 """
             for interface in java_class.interface_set:
                 self.dot_code += f"""
-                        edge [arrowhead=empty style=dashed]
-                        x{dot_id} -> x{dot_id_map[interface.get_detailed_type_id()]}
-    """
+                    edge [arrowhead=empty style=dashed]
+                    x{dot_id} -> x{dot_id_map[interface.get_detailed_type_id()]}
+"""
+
+            # aggregation
+            for field in java_class.field_set:
+                if field.is_base_type:
+                    continue
+                dot_type_id = dot_id_map[field.type_id]
+                self.dot_code += f"""
+                    edge [arrowhead=odiamond style=""]
+                    x{dot_type_id} -> x{dot_id}:{field.name}
+"""
 
         self.dot_code += "}"
 
