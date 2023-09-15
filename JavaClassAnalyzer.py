@@ -25,8 +25,9 @@ class JavaClass:
 
 
 class JavaMethod:
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, type_id: str) -> None:
         self.name = name
+        self.type_id = type_id
 
 
 class JavaClassAnalyzer:
@@ -162,7 +163,14 @@ class JavaClassAnalyzer:
             method_name = method_content["name"]
             if method_name == "<init>":
                 continue
-            java_method = JavaMethod(method_name)
+            type_content = method_content["returns"]["type"]
+            if type_content == None:
+                type_id = "Void"
+            elif "base" in type_content.keys():
+                type_id = type_content["base"]
+            else:
+                type_id = type_content["name"]
+            java_method = JavaMethod(method_name, type_id)
             self.method_set.add(java_method)
 
 
@@ -273,7 +281,7 @@ class ClassPainter:
                     method_code = ""
                     for method in java_class.method_set:
                         method_code += (
-                            f'<tr> <td align="left" >- {method.name}</td> </tr>'
+                            f'<tr> <td align="left" >- {method.name}: {method.type_id}</td> </tr>'
                         )
 
                     self.dot_code += f"""
