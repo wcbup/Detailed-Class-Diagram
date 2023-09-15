@@ -1,4 +1,5 @@
 from __future__ import annotations
+from types import NoneType
 from load_class_files import load_class_files
 from typing import List, Dict, Union, Set
 import json
@@ -17,8 +18,10 @@ class JavaClass:
 
     def get_detailed_type_id(self) -> str:
         return self.type_id
-        else:
-            return f"{self.type_id}&lt;{', '.join(self.arg_ids)}&gt;"
+        # if len(self.arg_ids) == 0:
+        #     return self.type_id
+        # else:
+        #     return f"{self.type_id}&lt;{', '.join(self.arg_ids)}&gt;"
 
 
 class JavaClassAnalyzer:
@@ -39,6 +42,9 @@ class JavaClassAnalyzer:
 
         self.id = get_id(self.content_json["name"])
 
+        # set of the dependency id
+        self.depend_set_id: Set[str] = set()
+
         # get super class
         self.super_class_id = get_id(self.content_json["super"]["name"])
 
@@ -53,6 +59,7 @@ class JavaClassAnalyzer:
             for arg_content in args_content:
                 arg_id = get_id(arg_content["type"]["name"])
                 java_interface.add_one_arg_id(arg_id)
+                self.depend_set_id.add(arg_id)
 
             self.interface_set.add(java_interface)
 
@@ -72,22 +79,78 @@ class JavaClassAnalyzer:
                 args_content: List[Dict[str]] = field_content["type"]["args"]
                 java_class = JavaClass(type_id, name, False)
                 for arg_content in args_content:
-                    java_class.add_one_arg_id(get_id(arg_content["type"]["name"]))
+                    arg_id = get_id(arg_content["type"]["name"])
+                    java_class.add_one_arg_id(arg_id)
+                    self.depend_set_id.add(arg_id)
             else:
                 type_id = field_content["type"]["base"]
                 java_class = JavaClass(type_id, name, True)
 
             self.field_set.add(java_class)
-        
+
         # composition
         self.inner_id_set: Set[str] = set()
+        self.outer_id_set: Set[str] = set()
         inners_content: List[Dict[str]] = self.content_json["innerclasses"]
         for inner_content in inners_content:
             inner_id = get_id(inner_content["class"])
+            outer_id = get_id(inner_content["outer"])
+            self.outer_id_set.add(outer_id)
             if inner_id == self.id:
                 continue
             self.inner_id_set.add(inner_id)
 
+        # dependency
+        def find_dependency(
+            content: Dict[str, Union[str, List, Dict[str]]] | List | any
+        ) -> None:
+            nonlocal self
+            if isinstance(content, dict):
+                if "method" in content.keys():
+                    type_id = get_id(content["method"]["ref"]["name"])
+                    self.depend_set_id.add(type_id)
+                    return
+                elif "params" in content.keys():
+                    typepara_set: Set[str] = set()
+                    if "typeparams" in content.keys():
+                        for typeparam_content in content["typeparams"]:
+                            typepara_set.add(typeparam_content["name"])
+
+                    for para in content["params"]:
+                        type_content: Dict[str, str] = para["type"]
+                        if "type" in type_content.keys():
+                            type_id = get_id(type_content["type"]["name"])
+                        elif "name" in type_content.keys():
+                            type_id = get_id(type_content["name"])
+                        if type_id not in typepara_set:
+                            self.depend_set_id.add(type_id)
+                for key in content.keys():
+                    find_dependency(content[key])
+            elif isinstance(content, List):
+                for i in content:
+                    find_dependency(i)
+
+            return
+
+        find_dependency(self.content_json)
+
+        def remove_depend_if_exist(id: str) -> None:
+            nonlocal self
+            if id in self.depend_set_id:
+                self.depend_set_id.remove(id)
+
+        remove_depend_if_exist(self.id)
+        remove_depend_if_exist(self.super_class_id)
+
+        for interface in self.interface_set:
+            remove_depend_if_exist(interface.type_id)
+
+        for field in self.field_set:
+            remove_depend_if_exist(field.type_id)
+
+        self.depend_set_id = self.depend_set_id - self.inner_id_set - self.outer_id_set
+
+        print(self.id, self.outer_id_set, self.depend_set_id)
 
 
 class ClassPainter:
@@ -120,17 +183,20 @@ class ClassPainter:
             <tr><td align="right" port="i2">realization</td></tr>
             <tr><td align="right" port="i3">aggregation</td></tr>
             <tr><td align="right" port="i4">composition</td></tr>
+            <tr><td align="right" port="i5">dependency</td></tr>
             </table>>]
             key2 [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
             <tr><td port="i1">&nbsp;</td></tr>
             <tr><td port="i2">&nbsp;</td></tr>
             <tr><td port="i3">&nbsp;</td></tr>
             <tr><td port="i4">&nbsp;</td></tr>
+            <tr><td port="i5">&nbsp;</td></tr>
             </table>>]
             key:i1:e -> key2:i1:w [arrowhead=empty style=""]
             key:i2:e -> key2:i2:w [arrowhead=empty style=dashed]
             key:i3:e -> key2:i3:w [arrowhead=odiamond style=""]
             key:i4:e -> key2:i4:w [arrowhead=diamond style=""]
+            key:i5:e -> key2:i5:w [arrowhead=vee style=dashed]
     }
         node [
 		fontname="Helvetica,Arial,sans-serif"
@@ -229,6 +295,9 @@ class ClassPainter:
                     continue
                 allocate_class_id(field.type_id)
 
+            for id in java_class.depend_set_id:
+                allocate_class_id(id)
+
         for java_class in self.java_class_set:
             dot_id = dot_id_map[java_class.id]
             # inheritance
@@ -259,6 +328,12 @@ class ClassPainter:
                 self.dot_code += f"""
                     edge [arrowhead=diamond style=""]
                     x{dot_id_map[inner_id]} -> x{dot_id}
+"""
+            # dependency
+            for depend_id in java_class.depend_set_id:
+                self.dot_code += f"""
+                    edge [arrowhead=vee style=dashed]
+                    x{dot_id} -> x{dot_id_map[depend_id]}
 """
 
         self.dot_code += "}"
