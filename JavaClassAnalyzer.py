@@ -108,7 +108,6 @@ class ClassPainter:
         self.dot_code = """
         digraph Class_Diagram {
         graph [
-		label="Detailed Class Diagram"
 		labelloc="t"
 		fontname="Helvetica,Arial,sans-serif"
 	]
