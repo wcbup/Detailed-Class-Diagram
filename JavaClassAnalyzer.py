@@ -24,6 +24,11 @@ class JavaClass:
         #     return f"{self.type_id}&lt;{', '.join(self.arg_ids)}&gt;"
 
 
+class JavaMethod:
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+
 class JavaClassAnalyzer:
     """
     class for analyzing one java class file
@@ -150,7 +155,15 @@ class JavaClassAnalyzer:
 
         self.depend_set_id = self.depend_set_id - self.inner_id_set - self.outer_id_set
 
-        print(self.id, self.outer_id_set, self.depend_set_id)
+        # method
+        self.method_set: Set[JavaMethod] = set()
+        methods_content = self.content_json["methods"]
+        for method_content in methods_content:
+            method_name = method_content["name"]
+            if method_name == "<init>":
+                continue
+            java_method = JavaMethod(method_name)
+            self.method_set.add(java_method)
 
 
 class ClassPainter:
@@ -257,6 +270,12 @@ class ClassPainter:
                     for field_class in java_class.field_set:
                         field_code += f'<tr> <td port="{field_class.name}" align="left" >- {field_class.name}: {field_class.get_detailed_type_id()}</td> </tr>'
 
+                    method_code = ""
+                    for method in java_class.method_set:
+                        method_code += (
+                            f'<tr> <td align="left" >- {method.name}</td> </tr>'
+                        )
+
                     self.dot_code += f"""
                         x{dot_id} [
                             shape=plain
@@ -271,7 +290,7 @@ class ClassPainter:
                                 <tr> <td>
                                     <table border="0" cellborder="0" cellspacing="0" >
                                         <tr> <td align="left" >+ method</td> </tr>
-                                        <tr> <td align="left" >- method 1</td> </tr>
+                                        {method_code}
                                     </table>
                                 </td> </tr>
                             </table>>
