@@ -164,6 +164,7 @@ class ClassPainter:
         # allocate the dot id to java class analyzer
         for java_class in self.java_class_set:
             allocate_id(java_class)
+        for java_class in self.java_class_set:
             allocate_id(java_class.super_class_id)
             for java_interface in java_class.interface_set:
                 allocate_id(java_interface)
