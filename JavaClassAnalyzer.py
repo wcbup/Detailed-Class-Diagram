@@ -113,6 +113,27 @@ class ClassPainter:
 		labelloc="t"
 		fontname="Helvetica,Arial,sans-serif"
 	]
+        rankdir=LR
+        node [shape=plaintext]
+        subgraph cluster_01 { 
+            label=""
+            key [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
+            <tr><td align="right" port="i1">inheritance</td></tr>
+            <tr><td align="right" port="i2">realization</td></tr>
+            <tr><td align="right" port="i3">aggregation</td></tr>
+            <tr><td align="right" port="i4">composition</td></tr>
+            </table>>]
+            key2 [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
+            <tr><td port="i1">&nbsp;</td></tr>
+            <tr><td port="i2">&nbsp;</td></tr>
+            <tr><td port="i3">&nbsp;</td></tr>
+            <tr><td port="i4">&nbsp;</td></tr>
+            </table>>]
+            key:i1:e -> key2:i1:w [arrowhead=empty style=""]
+            key:i2:e -> key2:i2:w [arrowhead=empty style=dashed]
+            key:i3:e -> key2:i3:w [arrowhead=odiamond style=""]
+            key:i4:e -> key2:i4:w [arrowhead=diamond style=""]
+    }
         node [
 		fontname="Helvetica,Arial,sans-serif"
 		shape=record
