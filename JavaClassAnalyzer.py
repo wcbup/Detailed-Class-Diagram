@@ -16,8 +16,7 @@ class JavaClass:
         self.arg_ids.append(id)
 
     def get_detailed_type_id(self) -> str:
-        if len(self.arg_ids) == 0:
-            return self.type_id
+        return self.type_id
         else:
             return f"{self.type_id}&lt;{', '.join(self.arg_ids)}&gt;"
 
