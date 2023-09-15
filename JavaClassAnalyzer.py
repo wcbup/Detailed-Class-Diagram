@@ -79,6 +79,16 @@ class JavaClassAnalyzer:
                 java_class = JavaClass(type_id, name, True)
 
             self.field_set.add(java_class)
+        
+        # composition
+        self.inner_id_set: Set[str] = set()
+        inners_content: List[Dict[str]] = self.content_json["innerclasses"]
+        for inner_content in inners_content:
+            inner_id = get_id(inner_content["class"])
+            if inner_id == self.id:
+                continue
+            self.inner_id_set.add(inner_id)
+
 
 
 class ClassPainter:
@@ -221,6 +231,13 @@ class ClassPainter:
                 self.dot_code += f"""
                     edge [arrowhead=odiamond style=""]
                     x{dot_type_id} -> x{dot_id}:{field.name}
+"""
+
+            # composition
+            for inner_id in java_class.inner_id_set:
+                self.dot_code += f"""
+                    edge [arrowhead=diamond style=""]
+                    x{dot_id_map[inner_id]} -> x{dot_id}
 """
 
         self.dot_code += "}"
