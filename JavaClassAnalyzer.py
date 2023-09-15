@@ -237,10 +237,12 @@ class ClassPainter:
                     edge [arrowhead=empty style=""]
                     x{dot_id} -> x{dot_id_map[java_class.super_class_id]}
 """
+
+            # realization
             for interface in java_class.interface_set:
                 self.dot_code += f"""
                     edge [arrowhead=empty style=dashed]
-                    x{dot_id} -> x{dot_id_map[interface.get_detailed_type_id()]}
+                    x{dot_id} -> x{dot_id_map[interface.get_detailed_type_id()]} [label = <&lt;{', '.join(interface.arg_ids)}&gt;>]
 """
 
             # aggregation
