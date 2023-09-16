@@ -1,6 +1,6 @@
 
         digraph Class_Diagram {
-        ratio = 0.56
+        ratio = 0.5
         graph [
 		labelloc="t"
 		fontname="Helvetica,Arial,sans-serif"
@@ -369,19 +369,19 @@
                     x0 -> x2
 
                     edge [arrowhead=vee style=dashed]
-                    x2 -> x13
+                    x2 -> x8
 
                     edge [arrowhead=vee style=dashed]
-                    x2 -> x9
+                    x2 -> x13
 
                     edge [arrowhead=vee style=dashed]
                     x2 -> x11
 
                     edge [arrowhead=vee style=dashed]
-                    x2 -> x8
+                    x2 -> x14
 
                     edge [arrowhead=vee style=dashed]
-                    x2 -> x14
+                    x2 -> x9
 
                     edge [arrowhead=empty style=""]
                     x3 -> x6
@@ -408,17 +408,17 @@
                     x6 -> x5:other
 
                     edge [arrowhead=vee style=dashed]
-                    x5 -> x1
+                    x5 -> x13
 
                     edge [arrowhead=vee style=dashed]
-                    x5 -> x13
+                    x5 -> x1
 
                     edge [arrowhead=empty style=""]
                     x6 -> x7
 
                     edge [arrowhead=vee style=dashed]
-                    x6 -> x1
+                    x6 -> x13
 
                     edge [arrowhead=vee style=dashed]
-                    x6 -> x13
+                    x6 -> x1
 }

@@ -191,7 +191,7 @@ class ClassPainter:
         dot_id_map: Dict[str, str] = {}  # java class id maps to dot id
         NORMAL_FONT_SIZE = 12
         LEGEND_FONT_SIZE = 18
-        RATIO = 0.56
+        RATIO = 0.50
         self.dot_code = f"""
         digraph Class_Diagram {{
         ratio = {RATIO}
