@@ -6,11 +6,9 @@ JavaClass.py
 JavaAnalyzer.py
 json
 __pycache__/load_class_files.cpython-311.pyc
-result.dot
 __pycache__/JavaClassAnalyzer.cpython-311.pyc
 .gitignore
 __pycache__/ClassPainter.cpython-311.pyc
-result.png
 .gitignore
 draft.dot
 draft.py

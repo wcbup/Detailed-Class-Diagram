@@ -1,0 +1,421 @@
+
+        digraph Class_Diagram {
+        graph [
+		labelloc="t"
+		fontname="Helvetica,Arial,sans-serif"
+	]
+        rankdir=LR
+        node [shape=plaintext]
+        subgraph cluster_01 { 
+            label=""
+            key [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
+            <tr><td align="right" port="i1">inheritance</td></tr>
+            <tr><td align="right" port="i2">realization</td></tr>
+            <tr><td align="right" port="i3">aggregation</td></tr>
+            <tr><td align="right" port="i4">composition</td></tr>
+            <tr><td align="right" port="i5">dependency</td></tr>
+            </table>>]
+            key2 [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
+            <tr><td port="i1">&nbsp;</td></tr>
+            <tr><td port="i2">&nbsp;</td></tr>
+            <tr><td port="i3">&nbsp;</td></tr>
+            <tr><td port="i4">&nbsp;</td></tr>
+            <tr><td port="i5">&nbsp;</td></tr>
+            </table>>]
+            key:i1:e -> key2:i1:w [arrowhead=empty style=""]
+            key:i2:e -> key2:i2:w [arrowhead=empty style=dashed]
+            key:i3:e -> key2:i3:w [arrowhead=odiamond style=""]
+            key:i4:e -> key2:i4:w [arrowhead=diamond style=""]
+            key:i5:e -> key2:i5:w [arrowhead=vee style=dashed]
+    }
+        node [
+		fontname="Helvetica,Arial,sans-serif"
+		shape=record
+		style=filled
+		fillcolor=gray95
+	]
+    
+                        x0 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>dtu.deps.simple.Example</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td port="other" align="left" >- other: dtu.deps.simple.Other</td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" >- main: Void</td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                        x1 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>dtu.deps.util.Utils</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" >- printHello: Void</td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                        x2 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>dtu.deps.simple.Another</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td port="primes" align="left" >- primes: dtu.deps.normal.Primes</td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" >- SayHi: Void</td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                        x3 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>dtu.deps.normal.Primes</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td port="primes" align="left" >- primes: java.util.List</td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" >- main: Void</td> </tr><tr> <td align="left" >- iterator: java/util/Iterator</td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                        x4 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>dtu.deps.normal.Primes$PrimesIterator</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td port="current" align="left" >- current: int</td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" >- next: java/lang/Object</td> </tr><tr> <td align="left" >- hasNext: boolean</td> </tr><tr> <td align="left" >- next: java/lang/Integer</td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                        x5 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>dtu.deps.tricky.Tricky</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td port="Other" align="left" >- Other: dtu.deps.simple.Example</td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" >- hello: Void</td> </tr><tr> <td align="left" >- Other: Void</td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                        x6 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>dtu.deps.simple.Other</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" >- main: Void</td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                        x7 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>java.lang.Object</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                        x8 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>java.lang.String</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                        x9 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>java.io.PrintStream</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                        x10 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>java.lang.Iterable</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                        x11 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>java.lang.Integer</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                        x12 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>java.util.List</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                        x13 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>java.util.Iterator</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                        x14 [
+                            shape=plain
+                            label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                                <tr> <td> <b>java.util.ArrayList</b> </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ field</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                                <tr> <td>
+                                    <table border="0" cellborder="0" cellspacing="0" >
+                                        <tr> <td align="left" >+ method</td> </tr>
+                                        <tr> <td align="left" > ... </td> </tr>
+                                    </table>
+                                </td> </tr>
+                            </table>>
+                        ]
+
+
+                    edge [arrowhead=empty style=""]
+                    x0 -> x7
+
+                    edge [arrowhead=odiamond style=""]
+                    x6 -> x0:other
+
+                    edge [arrowhead=vee style=dashed]
+                    x0 -> x8
+
+                    edge [arrowhead=vee style=dashed]
+                    x0 -> x1
+
+                    edge [arrowhead=empty style=""]
+                    x1 -> x7
+
+                    edge [arrowhead=vee style=dashed]
+                    x1 -> x9
+
+                    edge [arrowhead=empty style=""]
+                    x2 -> x6
+
+                    edge [arrowhead=odiamond style=""]
+                    x3 -> x2:primes
+
+                    edge [arrowhead=vee style=dashed]
+                    x2 -> x9
+
+                    edge [arrowhead=empty style=""]
+                    x3 -> x7
+
+                    edge [arrowhead=empty style=dashed]
+                    x3 -> x10 [label = <&lt;java.lang.Integer&gt;>]
+
+                    edge [arrowhead=odiamond style=""]
+                    x12 -> x3:primes
+
+                    edge [arrowhead=diamond style=""]
+                    x4 -> x3
+
+                    edge [arrowhead=vee style=dashed]
+                    x3 -> x8
+
+                    edge [arrowhead=vee style=dashed]
+                    x3 -> x9
+
+                    edge [arrowhead=vee style=dashed]
+                    x3 -> x13
+
+                    edge [arrowhead=vee style=dashed]
+                    x3 -> x11
+
+                    edge [arrowhead=vee style=dashed]
+                    x3 -> x14
+
+                    edge [arrowhead=empty style=""]
+                    x4 -> x7
+
+                    edge [arrowhead=empty style=dashed]
+                    x4 -> x13 [label = <&lt;java.lang.Integer&gt;>]
+
+                    edge [arrowhead=vee style=dashed]
+                    x4 -> x12
+
+                    edge [arrowhead=vee style=dashed]
+                    x4 -> x11
+
+                    edge [arrowhead=empty style=""]
+                    x5 -> x7
+
+                    edge [arrowhead=odiamond style=""]
+                    x0 -> x5:Other
+
+                    edge [arrowhead=vee style=dashed]
+                    x5 -> x1
+
+                    edge [arrowhead=empty style=""]
+                    x6 -> x7
+
+                    edge [arrowhead=vee style=dashed]
+                    x6 -> x8
+
+                    edge [arrowhead=vee style=dashed]
+                    x6 -> x1
+}
