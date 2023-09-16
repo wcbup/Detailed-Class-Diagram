@@ -189,15 +189,20 @@ class ClassPainter:
         save the code into './result.dot'
         """
         dot_id_map: Dict[str, str] = {}  # java class id maps to dot id
-        self.dot_code = """
-        digraph Class_Diagram {
+        NORMAL_FONT_SIZE = 12
+        LEGEND_FONT_SIZE = 18
+        RATIO = 0.56
+        self.dot_code = f"""
+        digraph Class_Diagram {{
+        ratio = {RATIO}
         graph [
 		labelloc="t"
 		fontname="Helvetica,Arial,sans-serif"
 	]
         rankdir=LR
-        node [shape=plaintext]
-        subgraph cluster_01 { 
+        node [shape=plaintext fontsize = "{LEGEND_FONT_SIZE}"]
+        subgraph cluster_01 {{ 
+            
             label=""
             key [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
             <tr><td align="right" port="i1">inheritance</td></tr>
@@ -218,8 +223,9 @@ class ClassPainter:
             key:i3:e -> key2:i3:w [arrowhead=odiamond style=""]
             key:i4:e -> key2:i4:w [arrowhead=diamond style=""]
             key:i5:e -> key2:i5:w [arrowhead=vee style=dashed]
-    }
+    }}
         node [
+        fontsize = "{NORMAL_FONT_SIZE}"
 		fontname="Helvetica,Arial,sans-serif"
 		shape=record
 		style=filled
@@ -336,7 +342,7 @@ class ClassPainter:
             # realization
             for interface in java_class.interface_set:
                 self.dot_code += f"""
-                    edge [arrowhead=empty style=dashed]
+                    edge [arrowhead=empty style=dashed fontsize = "{NORMAL_FONT_SIZE}"]
                     x{dot_id} -> x{dot_id_map[interface.get_detailed_type_id()]} [label = <&lt;{', '.join(interface.arg_ids)}&gt;>]
 """
 
